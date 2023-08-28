@@ -13,6 +13,7 @@
 
 	<properties>
 		<okhttp-version>3.10.0</okhttp-version>
+		<kickstart-version>8.1.5</kickstart-version>
 	</properties>
 
 
@@ -37,18 +38,13 @@
 			<artifactId>spring-web</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<optional>true</optional>
-		</dependency>
 
 		<dependency>
-			<groupId>com.squareup.okhttp3</groupId>
-			<artifactId>okhttp</artifactId>
-			<version>${okhttp-version}</version>
-			<optional>true</optional>
+			<groupId>io.github.hakky54</groupId>
+			<artifactId>sslcontext-kickstart</artifactId>
+			<version>${kickstart-version}</version>
 		</dependency>
+
 
 		<dependency>
 			<groupId>com.alibaba.cloud</groupId>

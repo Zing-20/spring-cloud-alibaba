@@ -21,7 +21,7 @@ import java.util.List;
 import com.alibaba.cloud.commons.governance.ControlPlaneInitedBean;
 import com.alibaba.cloud.governance.istio.sds.AbstractCertManager;
 import com.alibaba.cloud.governance.istio.sds.CertUpdateCallback;
-import com.alibaba.cloud.mtls.client.MtlsSSLContext;
+import com.alibaba.cloud.mtls.client.MtlsClientSSLContext;
 import com.alibaba.cloud.mtls.server.ApplicationRestarter;
 import com.alibaba.cloud.mtls.server.ServerTlsModeHolder;
 import com.alibaba.cloud.mtls.server.ServerTlsModeListener;
@@ -70,8 +70,9 @@ public class MtlsAutoConfiguration {
 	}
 
 	@Bean
-	public MtlsSSLContext mtlsSSLContext(MtlsSslStoreProvider mtlsSslStoreProvider) {
-		return new MtlsSSLContext(mtlsSslStoreProvider);
+	public MtlsClientSSLContext mtlsSSLContext(MtlsSslStoreProvider mtlsSslStoreProvider,
+			AbstractCertManager abstractCertManager) {
+		return new MtlsClientSSLContext(mtlsSslStoreProvider, abstractCertManager);
 	}
 
 	@Configuration(proxyBeanMethods = false)
