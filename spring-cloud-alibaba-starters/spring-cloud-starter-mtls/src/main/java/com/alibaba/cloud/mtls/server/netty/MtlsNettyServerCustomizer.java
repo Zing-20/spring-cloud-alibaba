@@ -36,6 +36,8 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509ExtendedKeyManager;
 
 import com.alibaba.cloud.governance.istio.sds.AbstractCertManager;
+import com.alibaba.cloud.governance.istio.sds.CertPair;
+import com.alibaba.cloud.governance.istio.sds.CertUpdateCallback;
 import com.alibaba.cloud.mtls.MtlsSslStoreProvider;
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -69,13 +71,16 @@ public class MtlsNettyServerCustomizer implements NettyServerCustomizer {
 	public HttpServer apply(HttpServer httpServer) {
 
 		// update certificate
-		certManager.registerCallback(certPair -> {
-			if (context != null) {
-				try {
-					context.setContext(getContextBuilder().build());
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException(ex);
+		certManager.registerCallback(new CertUpdateCallback() {
+			@Override
+			public synchronized void onUpdateCert(CertPair certPair) {
+				if (context != null) {
+					try {
+						context.setContext(getContextBuilder().build());
+					}
+					catch (Exception ex) {
+						throw new IllegalStateException(ex);
+					}
 				}
 			}
 		});

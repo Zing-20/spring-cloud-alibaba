@@ -17,6 +17,8 @@
 package com.alibaba.cloud.mtls.server.tomcat;
 
 import com.alibaba.cloud.governance.istio.sds.AbstractCertManager;
+import com.alibaba.cloud.governance.istio.sds.CertPair;
+import com.alibaba.cloud.governance.istio.sds.CertUpdateCallback;
 import com.alibaba.cloud.mtls.MtlsSslStoreProvider;
 import com.alibaba.cloud.mtls.server.ServerTlsModeHolder;
 import org.apache.catalina.connector.Connector;
@@ -61,20 +63,23 @@ public class MtlsTomcatConnectCustomizer
 			return;
 		}
 		// When the certificate is expired, we refresh the server certificate.
-		certManager.registerCallback(certPair -> {
-			try {
-				if (!validateContext()) {
-					return;
+		certManager.registerCallback(new CertUpdateCallback() {
+			@Override
+			public synchronized void onUpdateCert(CertPair certPair) {
+				try {
+					if (!validateContext()) {
+						return;
+					}
+					ProtocolHandler protocolHandler = connector.getProtocolHandler();
+					AbstractProtocol<?> abstractProtocol = (AbstractProtocol<?>) protocolHandler;
+					if (abstractProtocol instanceof AbstractHttp11Protocol<?>) {
+						AbstractHttp11Protocol<?> proto = ((AbstractHttp11Protocol<?>) abstractProtocol);
+						proto.reloadSslHostConfigs();
+					}
 				}
-				ProtocolHandler protocolHandler = connector.getProtocolHandler();
-				AbstractProtocol<?> abstractProtocol = (AbstractProtocol<?>) protocolHandler;
-				if (abstractProtocol instanceof AbstractHttp11Protocol<?>) {
-					AbstractHttp11Protocol<?> proto = ((AbstractHttp11Protocol<?>) abstractProtocol);
-					proto.reloadSslHostConfigs();
+				catch (Exception e) {
+					log.error("Failed to reload certificate of tomcat", e);
 				}
-			}
-			catch (Exception e) {
-				log.error("Failed to reload certificate of tomcat", e);
 			}
 		});
 		if (!ServerTlsModeHolder.waitTlsModeInitialized()) {

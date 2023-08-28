@@ -21,8 +21,7 @@ import java.util.List;
 import com.alibaba.cloud.commons.governance.ControlPlaneInitedBean;
 import com.alibaba.cloud.governance.istio.sds.AbstractCertManager;
 import com.alibaba.cloud.governance.istio.sds.CertUpdateCallback;
-import com.alibaba.cloud.mtls.client.rest.ClientRequestFactoryProvider;
-import com.alibaba.cloud.mtls.client.rest.RestTemplateCallback;
+import com.alibaba.cloud.mtls.client.MtlsSSLContext;
 import com.alibaba.cloud.mtls.server.ApplicationRestarter;
 import com.alibaba.cloud.mtls.server.ServerTlsModeHolder;
 import com.alibaba.cloud.mtls.server.ServerTlsModeListener;
@@ -40,7 +39,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 
 @Configuration(proxyBeanMethods = false)
 public class MtlsAutoConfiguration {
@@ -69,6 +67,11 @@ public class MtlsAutoConfiguration {
 			AbstractCertManager certManager,
 			@Autowired(required = false) List<CertUpdateCallback> callbacks) {
 		return new MtlsCertCallbackIniter(certManager, callbacks);
+	}
+
+	@Bean
+	public MtlsSSLContext mtlsSSLContext(MtlsSslStoreProvider mtlsSslStoreProvider) {
+		return new MtlsSSLContext(mtlsSslStoreProvider);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -102,18 +105,6 @@ public class MtlsAutoConfiguration {
 				registration.getNacosDiscoveryProperties().getMetadata().put("secure",
 						"true");
 			};
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ RestTemplate.class })
-	static class RestTemplateMtlsConfiguration {
-
-		@Bean
-		public RestTemplateCallback restTemplateCallback(
-				ClientRequestFactoryProvider clientRequestFactoryProvider) {
-			return new RestTemplateCallback(clientRequestFactoryProvider);
 		}
 
 	}
