@@ -1,0 +1,26 @@
+server:
+  port: ${SERVER_PORT:8555}
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        enabled: true
+    governance:
+      auth:
+        enabled: ${ISTIO_AUTH_ENABLE:true}
+    istio:
+      config:
+        enabled: ${ISTIO_CONFIG_ENABLE:true}
+        host: ${ISTIOD_ADDR:123.56.137.232}
+        port: ${ISTIOD_PORT:15012}
+        use-agent: ${USE_AGENT:false}
+        istiod-token: ${ISTIOD_TOKEN:eyJhbGciOiJSUzI1NiIsImtpZCI6IlFNd2NTQUNVOXk5X18yQ3d0WkZwTVNhQnJPeDkyRGFkdHJ0d3lPb0dwRU0ifQ.eyJhdWQiOlsiaXN0aW8tY2EiXSwiZXhwIjoxNjk1NjM2OTUyLCJpYXQiOjE2OTU1OTM3NTIsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2YyIsImt1YmVybmV0ZXMuaW8iOnsibmFtZXNwYWNlIjoiZGVmYXVsdCIsInBvZCI6eyJuYW1lIjoiZGV0YWlscy12MS01OGM4ODg3OTRiLTRwNmJsIiwidWlkIjoiYzlmOTA5YTAtZDNkNy00ODA2LTljYzktMWU2MzI1NjcxMzAzIn0sInNlcnZpY2VhY2NvdW50Ijp7Im5hbWUiOiJib29raW5mby1kZXRhaWxzIiwidWlkIjoiNGY4NTg2OTYtODBmMy00NDM0LWJjMjEtZmFiN2IyODZhZWQzIn19LCJuYmYiOjE2OTU1OTM3NTIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0OmJvb2tpbmZvLWRldGFpbHMifQ.ZWl0VRj-4iceky-yO581g9NXluUk1tm-OMbbm1SqIMeHDP00GQnoLKnx0kLQW3zxxNl8tpLuUptoojXOtDwLj82_FPs1JviRvVm3tKo-z90uFx8_Lnw5JjTP0gX5NQ_pr1S5pGMA7mDaa4UYju54-rLOPdf6UR_z-E2FeH4at43WD6yXg9bFmGRIrA8bGFg4hpT5amE-NkW_dh1wfDjJpwOFUiOBF1IAnrwb1mWM88oV2-U3hmhHXI6ny3eYXEZSA9kI2W5CZxg-yQ5U5h6UjIzh0APGuSYh6-xNjaEuK8h3uE79w-jK-jLKweCWozOjcAA1wYGDoNXZdMsL3STFrA}
+        namespace-name: default
+    loadbalancer:
+      ribbon:
+        enabled: false
+      retry:
+        enabled: true
+  application:
+    name: mtls-webclient-example

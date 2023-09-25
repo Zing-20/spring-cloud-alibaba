@@ -66,6 +66,9 @@
         <module>governance-example/authentication-example/istio-authentication-provider-mvc-example</module>
         <module>governance-example/authentication-example/istio-authentication-provider-webflux-example</module>
 
+        <module>mtls-example/mtls-client-example/mtls-resttemplate-example</module>
+        <module>mtls-example/mtls-server-example/mtls-mvc-example</module>
+
     </modules>
 
     <build>
