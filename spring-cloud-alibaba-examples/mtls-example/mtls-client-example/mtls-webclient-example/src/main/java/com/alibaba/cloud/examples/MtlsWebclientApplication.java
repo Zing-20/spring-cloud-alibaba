@@ -1,21 +1,18 @@
 package com.alibaba.cloud.examples;
 
+import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLException;
-import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.SSLParameters;
 
 import com.alibaba.cloud.mtls.client.MtlsClientSSLContext;
-import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.SslProvider;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,7 +43,7 @@ public class MtlsWebclientApplication {
 				SslContextBuilder builder1;
 
 				nettySslContext = SslContextBuilder.forClient()
-						.trustManager(InsecureTrustManagerFactory.INSTANCE)
+						.trustManager(mtlsClientSSLContext.getTrustManagerFactory().orElse(null))
 						.keyManager(mtlsClientSSLContext.getKeyManagerFactory().orElse(null))
 						.build();
 			}
@@ -57,7 +54,12 @@ public class MtlsWebclientApplication {
 			SslContext finalNettySslContext = nettySslContext;
 
 			HttpClient httpClient = HttpClient.create()
-					.secure(spec -> spec.sslContext(finalNettySslContext));
+					.secure(spec -> spec.sslContext(finalNettySslContext).handlerConfigurator(sslHandler -> {
+						SSLEngine engine = sslHandler.engine();
+						SSLParameters sslParameters = engine.getSSLParameters();
+						sslParameters.setEndpointIdentificationAlgorithm("");
+						engine.setSSLParameters(sslParameters);
+					}));
 
 			ClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
 			return builder.clientConnector(connector).build().get()
